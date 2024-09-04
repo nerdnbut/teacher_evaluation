@@ -1,0 +1,69 @@
+{% extends "student_template/base.html" %}
+{% load static %}
+{% block custom_js %}<!-- FLOT CHARTS -->
+<script src="{% static '/plugins/flot/jquery.flot.js' %}"></script>
+<!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
+<script src="{% static '/plugins/flot/plugins/jquery.flot.resize.js' %}"></script>
+<!-- FLOT PIE PLUGIN - also used to draw donut charts -->
+<script src="{% static '/plugins/flot/plugins/jquery.flot.pie.js' %}"></script>
+{% endblock custom_js %}
+
+{% block content %}
+    <div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <div class="breadcrumb float-sm-left">
+                        <li class="breadcrumb-item"><a href="{% url 'student_home' %}">首页</a></li>
+                        <li class="breadcrumb-item"><a href="#">查看成绩分析</a></li>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">成绩分析</h3>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="studentGrade" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </div>
+{% endblock content %}
+
+{% block custom_jq_script %}
+    <script>
+    let ctx = document.getElementById('studentGrade').getContext('2d');
+        let radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: {{ labels|safe }},
+                datasets: [{
+                    label: '成绩',
+                    data: {{ scores|safe }},
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock custom_jq_script %}

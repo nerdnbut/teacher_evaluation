@@ -1,0 +1,130 @@
+{% extends "teacher_template/base.html" %}
+{% load static %}
+{% block custom_js %}<!-- FLOT CHARTS -->
+<script src="{% static '/plugins/flot/jquery.flot.js' %}"></script>
+<!-- FLOT RESIZE PLUGIN - allows the chart to redraw when the window is resized -->
+<script src="{% static '/plugins/flot/plugins/jquery.flot.resize.js' %}"></script>
+<!-- FLOT PIE PLUGIN - also used to draw donut charts -->
+<script src="{% static '/plugins/flot/plugins/jquery.flot.pie.js' %}"></script>
+{% endblock custom_js %}
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <div class="breadcrumb float-sm-left">
+                        <li class="breadcrumb-item"><a href="{% url 'teacher_home' %}">首页</a></li>
+                        <li class="breadcrumb-item"><a href="#">查看成绩分析</a></li>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h3 class="card-title">教师平均分数</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="teacherAvgScoresChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h3 class="card-title">学生评分情况</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="fromStudentScore" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock content %}
+
+{% block custom_jq_script %}
+   <script>
+    // 获取从视图函数传递过来的数据
+    let teacherNames = {{ teacher_name|safe }};
+    let teacherGrades = {{ teacher_avg_scores|safe }};
+
+    // 根据数据绘制条形图
+    let ctx = document.getElementById('teacherAvgScoresChart').getContext('2d');
+    let teacherGradesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: teacherNames,
+            datasets: [
+                {
+                    label:'教师平均分',
+                    data: teacherGrades,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+
+
+    let student_data = [];
+    {% for grade in teacher_grades %}
+        student_data.push({x:"{{ grade.from_student.user.username }}",y:{{grade.grade}} })
+    {% endfor %}
+    let scatter = document.getElementById('fromStudentScore').getContext('2d');
+    let scatterChart = new Chart(scatter,{
+        type: 'scatter',
+        data:{
+            datasets: [{
+                label: "各学生的评分情况",
+                data:student_data,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)', // 设置点的颜色和透明度
+                borderColor: 'rgba(75, 192, 192, 1)', // 设置点边框的颜色
+                borderWidth: 1 // 设置点边框的宽度
+            }]
+        },
+        options: {
+            scales: {
+                xAxes:[{
+                    type:'category',
+                    scaleLabel:{
+                        display:true,
+                        labelString:'学生',
+                    }
+                }],
+                yAxes: [{
+                    scaleLabel: {
+                        display:true,
+                        labelString:'成绩'
+                    }
+                }]
+            }
+        }
+    });
+</script>
+{% endblock custom_jq_script %}

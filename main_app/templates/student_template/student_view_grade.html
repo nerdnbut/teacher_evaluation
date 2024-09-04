@@ -1,0 +1,53 @@
+{% extends "student_template/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <div class="breadcrumb float-sm-left">
+                        <li class="breadcrumb-item"><a href="{% url 'student_home' %}">首页</a></li>
+                        <li class="breadcrumb-item"><a href="#">查看我的成绩</a></li>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h5 class="card-title">查看我的成绩</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>来自老师</th>
+                                    <th>课程</th>
+                                    <th>成绩</th>
+                                    <th>老师评语</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%  for grade in student_grade %}
+                                    <tr>
+                                    <td>{{ grade.from_teacher.user.username }}</td>
+                                    <td>{{ grade.course }}</td>
+                                    <td>{{ grade.grade }}</td>
+                                    <td>{{ grade.teacher_evaluation }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </div>
+{% endblock content %}

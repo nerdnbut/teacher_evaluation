@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>立即注册</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'dist/css/adminlte.min.css' %}">
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'dist/js/adminlte.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+<body class="hold-transition register-page" style="background-image: url('{% static 'css/login_background.png' %}')">
+<div class="register-box" style="opacity: 0.9">
+    <div class="register-logo">
+        <img src="{% static 'dist/img/AdminLTELogo.png' %}" alt="logo">
+    </div>
+    <div class="card">
+        <div class="card-header">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == "success" %}
+                        <div class="alert alert-success">
+                            {{ message }}
+                        </div>
+                    {% elif message.tags == "error" %}
+                        <div class="alert alert-danger">
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="card-body register-card-body">
+            <form action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                <div class="input-group mb-3 ml-1 mr-1">
+                    <span class="input-group-text"><i class="bi bi-people-fill"></i></span>
+                    {{ form.user_type }}
+                </div>
+                <div class="input-group mb-3 ml-1 mr-1">
+                    <span class="input-group-text"><i class="bi bi-gender-ambiguous"></i></span>
+                    {{ form.gender }}
+                </div>
+                <div class="input-group mb-3 ml-1 mr-1">
+                    <span class="input-group-text"><i class="bi bi-person-square"></i></span>
+                    {{ form.username }}
+                </div>
+                <div class="input-group mb-3 ml-1 mr-1">
+                    <span class="input-group-text"><i class="bi bi-envelope-at-fill"></i></span>
+                    {{ form.email }}
+                </div>
+                <div class="input-group mb-3 ml-1 mr-1">
+                    <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                    {{ form.password }}
+                </div>
+                <div class="input-group mb-3 ml-1 mr-1">
+                    <span class="input-group-text"><i class="bi bi-check-circle-fill"></i></span>
+                    {{ form.confirm_password }}
+                </div>
+
+                <div class="input-group mb-3 ml-1 mr-1">
+                    <span class="input-group-text"><i class="bi bi-robot"></i></span>
+                    {{ form.captcha }}
+                    <span class="input-group-text"><button id="change_captcha" class="btn btn-primary btn-sm" type="button">看不清</button></span>
+                </div>
+                <button class="btn btn-success btn-block" type="submit">立即注册</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script>
+    $("#change_captcha").click(function (){
+        $.getJSON("{% url 'captcha-refresh' %}",{},function (response){
+                $("#id_captcha_0").val(response["key"])
+                $("img.captcha").attr('src',response['image_url'])
+            })
+    })
+</script>

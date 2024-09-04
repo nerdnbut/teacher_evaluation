@@ -1,0 +1,101 @@
+{% extends "student_template/base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6 float-sm-left">
+                    <div class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'student_home' %}">首页</a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="#">教学评价</a>
+                        </li>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h3 class="card-title">教师详情</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>教师用户名</th>
+                                    <th>教师性别</th>
+                                    <th>任职课程</th>
+                                    <th>评教</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {%  for teacher in teachers %}
+                                    <tr>
+                                        <td>{{ teacher.user.username }}</td>
+                                        <td>
+                                            {% if teacher.user.gender == 0 %}
+                                                男
+                                            {% else %}
+                                                女
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ teacher.course }}</td>
+                                        <td><button id="evaluate_button" class="btn btn-block btn-dark" type="button" data-toggle="modal" data-target="#evaluate_teacher" value="{{ teacher.id }}">立即评教</button></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="modal fade" id="evaluate_teacher" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">为老师评教</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'student_do_evaluate' %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="hidden" name="teacher_id" id="teacher_id" value="">
+                            <input type="hidden" name="from_student" id="from_student" value="">
+                            <label for="evaluate_score">评价分数</label>
+                            <input type="number" required name="teacher_score" max="100" min="0" id="evaluate_score" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="evaluate_advice">写给老师的建议</label>
+                            <textarea  class="form-control"  required id="evaluate_advice" name="teacher_advice" rows="7" maxlength="150" placeholder="最多输入150字!" style="resize: none"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success btn-block">立即提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock content %}
+{% block custom_jq_script %}
+    <script>
+    $("#evaluate_teacher").on('show.bs.modal',function (event){
+        let teacher_id = $("#evaluate_button").val()
+        $("#teacher_id").val(teacher_id)
+        $("#from_student").val({{ student.id }})
+    })
+    </script>
+{% endblock custom_jq_script %}

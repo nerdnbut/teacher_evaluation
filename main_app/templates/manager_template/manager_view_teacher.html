@@ -1,0 +1,146 @@
+{% extends "manager_template/base.html" %}
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <div class="breadcrumb float-sm-left">
+                        <li class="breadcrumb-item"><a href="{% url 'manager_home' %}">首页</a></li>
+                        <li class="breadcrumb-item"><a href="#">查看教师</a></li>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h3 class="card-title">教师管理页</h3>
+                        </div>
+                        <div class="card-body">
+                        {% if messages  %}
+                            {% for message in messages %}
+                                {% if message.tags == 'success' %}
+                                <div class="alert alert-success">删除教师成功</div>
+                                {% elif message.tags == 'error' %}
+                                <div class="alert alert-danger">删除失败</div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                            <table id="student_table" class="table table-hover table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>用户名</th>
+                                    <th>性别</th>
+                                    <th>编辑</th>
+                                    <th>删除教师</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for teacher in teachers %}
+                                    <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ teacher.user.username }}</td>
+                                    <td>
+                                        {% if teacher.user.gender == 1 %}
+                                            女
+                                        {% elif teacher.user.gender == 0 %}
+                                            男
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button id="edit_button" type="button" class="btn btn-primary" data-toggle="modal" data-target="#edit_teacher_username" onclick="store_teacher_id({{ teacher.id }})">修改教师用户名</button>
+                                        |
+                                        <button id="edit_button_2" type="button" class="btn btn-primary" data-toggle="modal" data-target="#edit_teacher_email" onclick="store_teacher_id({{ teacher.id }})">修改教师邮箱</button>
+                                    </td>
+                                    <td>
+                                        {% comment %}
+                                        	该学生已毕业即可删除脱离管理
+                                        {% endcomment %}
+                                        <a href="{% url 'manager_delete_teacher' teacher.id %}" onclick="return confirm('确定要删除该教师吗？')" class="btn btn-danger">删除教师</a>
+                                    </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% comment %}
+    模态框
+{% endcomment %}
+    <div class="modal fade" id="edit_teacher_username" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>修改教师用户名</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" id="username_form">
+                    {{ username_form }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success btn-block" id="edit_teacher_username">立即修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="edit_student_email" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>修改教师邮箱</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" id="email_form">
+                    {{ email_form }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success btn-block" id="edit_teacher_email">立即修改</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock%}
+{% block custom_jq_script %}
+<script>
+    let teacher_id = 0;
+    function store_teacher_id(teacher){
+        teacher_id = teacher;
+    }
+    $('#edit_teacher_username').click(function (){
+        let username = $("#username_form").find('input[name="username"]').val();
+        $.ajax({
+            method:'POST',
+            url:'{% url 'manager_edit_teacher_username' %}',
+            data:{
+                username,
+                teacher_id
+            }
+        })
+    });
+
+    $('#edit_teacher_email').click(function (){
+        let email = $("#email_form").find('input[name="email"]').val();
+        $.ajax({
+            method:'POST',
+            url:'{% url 'manager_edit_teacher_email' %}',
+            data:{
+                email,
+                teacher_id
+            }
+        })
+    });
+    </script>
+{% endblock %}

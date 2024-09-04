@@ -1,0 +1,75 @@
+{% extends "teacher_template/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <div class="breadcrumb float-sm-left">
+                        <li class="breadcrumb-item"><a href="{% url 'teacher_home' %}">首页</a></li>
+                        <li class="breadcrumb-item"><a href="#">查看成绩</a></li>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h3 class="card-title">查看我的成绩</h3>
+                        </div>
+                        <div class="card-body">
+                            <table id="student_table" class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>来自学生</th>
+                                    <th>学生所属课程</th>
+                                    <th>学生性别</th>
+                                    <th>学生评分</th>
+                                    <th>学生建议</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for grade in teacher_grade %}
+                                    <tr>
+                                        <td>{{ grade.from_student.user.username }}</td>
+                                        <td>{{ teacher_course }}</td>
+                                        <td>
+                                            {% if grade.from_student.user.gender == 1 %}
+                                                女
+                                                {% else %}
+                                                男
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if grade.grade %}
+                                                {{ grade.grade }}
+                                            {% else %}
+                                                 <span class="badge badge-warning">等待学生打分</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if grade.student_evaluation %}
+                                                {{ grade.student_evaluation }}
+                                            {% else %}
+                                                 <span class="badge badge-warning">等待学生评价</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{%  endblock content %}

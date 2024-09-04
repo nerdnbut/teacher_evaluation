@@ -1,0 +1,117 @@
+{% extends 'teacher_template/base.html' %}
+{% load static %}
+{% block custom_js %}
+    <!-- DataTables -->
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+    <!-- DataTables  & Plugins -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+    <script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+    <script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+    <script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+    <script>
+  $(function () {
+    $("#example1").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+    $('#example2').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": false,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+  });
+</script>
+{%  endblock custom_js %}
+
+
+{%  block content %}
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <div class="breadcrumb float-sm-left">
+                            <li class="breadcrumb-item"><a href="{% url 'teacher_home' %}">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">查看学生</a> </li>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card card-dark">
+                            <div class="card-header">
+                                <h3 class="card-title">学生管理页</h3>
+                            </div>
+                            <div class="card-body">
+                                <table id="student_table" class="table table-hover table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th>用户名</th>
+                                        <th>性别</th>
+                                        <th>所属课程</th>
+                                        <th>成绩</th>
+                                        <th>教师评价</th>
+                                        <th>编辑</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for student in students %}
+                                        <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ student.user.username }}</td>
+                                        <td>
+                                            {% if student.user.gender == 1 %}
+                                                女
+                                            {% elif student.user.gender == 0 %}
+                                                男
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ teacher_course }}</td>
+                                        <td>
+                                            {% if student.studentgrade_set.all %}
+                                                {{ student.studentgrade_set.first.grade }}
+                                            {% else %}
+                                                <span class="badge badge-warning">等待打分</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if student.studentgrade_set.all %}
+                                                {{ student.studentgrade_set.first.teacher_evaluation }}
+                                            {% else %}
+                                                <span class="badge badge-danger">等待评价</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-primary" href="{% url 'teacher_edit_student' %}">编辑学生成绩</a>
+                                        </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock content %}

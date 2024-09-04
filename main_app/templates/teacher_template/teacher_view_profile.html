@@ -1,0 +1,60 @@
+{% extends "teacher_template/base.html" %}
+{%  block content %}
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <div class="breadcrumb float-sm-left">
+                            <li class="breadcrumb-item"><a href="{% url 'teacher_home' %}">首页</a></li>
+                            <li class="breadcrumb-item"><a href="#">个人信息</a></li>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <section class="content">
+            <div class="container-fluid" style="padding-left: 25%;padding-right: 25%;">
+                <div class="card card-dark">
+                    <div class="card-header ">
+                        <h5 class="card-title">个人信息</h5>
+                    </div>
+                    <div class="card-body box-profile">
+                        <div class="text-center mt-2 mb-2">
+                            <img src="{{ MEDIA_URL }}{{ user.profile }}" alt="用户头像" class="profile-user-img img-fluid img-circle">
+                        </div>
+                        <h3 class="profile-username text-center">{{ user.username }}</h3>
+                        <p class="text-muted text-center">
+                            {% if user.user_type == 0 %}
+                            学生
+                            {% else %}
+                            老师
+                            {% endif %}
+                        </p>
+                        <div class="list-group list-group-unbordered mb-3">
+                            <li class="list-group-item">
+                                <b>邮箱</b>
+                                <a class="float-right">{{ user.email }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>教学生涯开始于</b>
+                                <a class="float-right">{{ user.created_at }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>任教课程</b>
+                                <a class="float-right">{{ course }}</a>
+                            </li>
+                            <li class="list-group-item">
+                                <b>教学评分</b>
+                                <a class="float-right">{{ average_score }}</a>
+                            </li>
+                        </div>
+                        <div class="button">
+                            <button type="button" class="btn btn-dark btn-block"><a href="{% url 'edit_teacher_profile' %}" class="btn-link">修改个人信息</a></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock content %}

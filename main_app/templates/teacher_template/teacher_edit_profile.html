@@ -1,0 +1,95 @@
+{% extends 'teacher_template/base.html' %}
+{% block content %}
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <div class="breadcrumb float-sm-left">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'teacher_home' %}">主页</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="#">修改个人信息</a>
+                            </li>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-header">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.tags == 'success' %}
+                        <div class="alert alert-success">{{ message }}</div>
+                    {% elif message.tags == 'error' %}
+                        <div class="alert alert-danger">{{ message }}</div>
+                    {% else %}
+                        <div class="alert alert-warning">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+        <section class="content">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home_tab" data-toggle="tab" data-target="#home" role="tab" aria-controls="home" aria-selected="true">修改个人信息</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="change_password_tab" data-toggle="tab" data-target="#change_password" role="tab" aria-controls="change_password" aria-selected="false">
+                        修改密码
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="change_email_tab" data-toggle="tab" data-target="#change_email" role="tab" aria-selected="false" aria-controls="change_email">
+                        修改邮箱
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="home" role="tabpanel">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h3 class="card-title">修改个人信息</h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="post">
+                                {% csrf_token %}
+                                {{ user_form }}
+                                <button type="submit" class="btn btn-dark btn-block">立即修改</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="change_password" role="tabpanel">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h3 class="card-title">修改密码</h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'teacher_change_password' %}">
+                                {% csrf_token %}
+                                {{ change_password_form }}
+                                <button type="submit" class="btn btn-block btn-dark mt-2" >立即修改</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="change_email" role="tabpanel">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h3 class="card-title">修改邮箱</h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'teacher_change_email' %}">
+                                {% csrf_token %}
+                                {{ change_email_form }}
+                                <button class="btn btn-block btn-dark mt-2" type="submit">立即修改</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock content %}

@@ -1,0 +1,132 @@
+{% extends 'teacher_template/base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="content-wrapper">
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <div class="breadcrumb float-sm-left">
+                            <div class="breadcrumb-item">
+                                <a href="{% url 'teacher_home' %}">主页</a>
+                            </div>
+                            <div class="breadcrumb-item">
+                                <a href="#">修改学生成绩</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-dark">
+                        <div class="card-header">
+                            <h3 class="card-title">修改学生成绩</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>学生用户名</th>
+                                    <th>性别</th>
+                                    <th>课程</th>
+                                    <th>成绩</th>
+                                    <th>教师评价</th>
+                                    <th>编辑</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for student in students %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ student.user.username }}</td>
+                                        <td>
+                                            {% if student.user.gender == 1 %}
+                                                女
+                                            {% elif student.user.gender == 0 %}
+                                                男
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ teacher_course }}</td>
+                                        <td>
+                                            {% if student.studentgrade_set.all %}
+                                                {{ student.studentgrade_set.first.grade }}
+                                            {% else %}
+                                                <span class="badge badge-warning">等待打分</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if student.studentgrade_set.all %}
+                                                {{ student.studentgrade_set.first.teacher_evaluation }}
+                                            {% else %}
+                                                <span class="badge badge-danger">等待评价</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn-sm btn-primary" data-toggle="modal" data-target="#edit_grade">编辑成绩</button>
+                                            <span>|</span>
+                                            <button type="button" class="btn-sm btn-info" data-toggle="modal" data-target="#edit_evaluation">编辑评价</button>
+                                        </td>
+                                        <div class="modal fade" id="edit_grade" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">编辑学生成绩</h5>
+                                                        <button class="close" type="button" data-dismiss="modal">
+                                                            &times;
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="post" action="{% url 'teacher_do_edit_grade' %}" class="form-group">
+                                                            {% csrf_token %}
+                                                            <label for="grade">学生成绩</label>
+                                                            <input type="hidden" name="student_id" id="student_id" value="{{ student.id }}">
+                                                            <input type="number" placeholder="请输入学生成绩" id="grade" name="grade" class="form-control" min="0" max="100">
+                                                            <button type="submit" class="btn btn-success btn-block mt-3">提交分数</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal fade" id="edit_evaluation" tabindex="-1">
+                                            <div class="modal-dialog-centered modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">给学生写评语</h5>
+                                                        <button class="close" type="button" data-dismiss="modal">
+                                                            &times;
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="post" action="{% url 'teacher_do_edit_evaluation' %}" class="form-group">
+                                                            {% csrf_token %}
+                                                            <label for="evaluation">给学生的评语</label>
+                                                            <input type="hidden" name="student_id" id="student_id" value="{{ student.id }}">
+                                                            <textarea  class="form-control" name="evaluation" placeholder="最多150字!" maxlength="150"  rows="7" style="resize:none"></textarea>
+                                                            <button type="submit" class="btn btn-success btn-block mt-3">提交评语</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </div>
+
+
+
+{% endblock content %}
